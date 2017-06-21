@@ -4,7 +4,8 @@ html {
 }
 
 body {
-	padding: 60px;
+	padding: 10px;
+
 }
 
 .row{
@@ -14,11 +15,54 @@ body {
 	height: 100%;
 }
 
-.pixel {
-    cursor: default;
-    background-color: #B0C4DE;
-
+#title{
+	height: 60px;
+	width: 700px;
+	font-size: 60px;
+	margin: 0 auto;
+	padding-top: 30px;
+	text-align: right;
+	font-weight: bold;
+	font-variant: small-caps;
 }
+
+#text{
+	color: darkred;
+	font-size: 60px;
+	top: 500px;
+	left: 100px;
+	position: absolute;
+	font-weight: bold;
+	font-variant: small-caps;
+}
+
+#container{
+	top: 15px;
+	position: absolute;
+	margin: 0 auto;
+	border: solid 10px #B0C4DE;
+	border-right-color: darkred;
+	border-left-color: darkred;
+	border-top-color: darkblue;
+	border-bottom-color: darkblue;
+	width: max-content;
+	padding: 20px 20px 20px 20px;
+}
+
+.pixel {
+	cursor: default;
+	background-color: #B0C4DE;
+	position: relative;
+	width: 100px; 
+	height: 57.74px;
+	margin: 16px 2px;
+	background-size: auto 115.4701px;
+	background-position: center;
+}
+.active:hover{
+	background-color: lightgray;
+}
+
 
 .gap {
 	cursor: default;
@@ -32,25 +76,13 @@ body {
 }
 
 .p1 {
-    background-color: red;
+    background-color: darkred;
 }
 
 .p2 {
-	background-color: blue;
+	background-color: darkblue;
 }
 
-
-
-
-
-.pixel {
-  position: relative;
-  width: 100px; 
-  height: 57.74px;
-  margin: 16px 2px;
-  background-size: auto 115.4701px;
-  background-position: center;
-}
 
 .pixTop,
 .pixBottom {
@@ -66,7 +98,6 @@ body {
   left: 14.64px;
 }
 
-/*counter transform the bg image on the caps*/
 .pixTop:after,
 .pixBottom:after {
   content: "";
@@ -107,4 +138,20 @@ body {
   height: 57.7350px;
   z-index: 2;
   background: inherit;
+}
+
+.winPixel {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1.0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1.0;
+  }
 }
