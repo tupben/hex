@@ -1,7 +1,8 @@
-let boardSize = 7;
+let boardSize = 4;
 let turns = 0;
 let gameEnd = false;
 document.body.onload = buildBoard(boardSize);
+
 
 function checkPals(newBoard, pixel, turn){
 	all_pals = [];
@@ -25,7 +26,7 @@ function checkPals(newBoard, pixel, turn){
 function checkOne(newBoard, curr, turn){
 	let acc = [];
 	if (turn === 1){
-		if (curr[1] === newBoard[0].length - 1){
+		if (curr[1] === newBoard.length - 1){
 			return [curr];
 		};
 	} else if (turn === 2){
@@ -101,9 +102,8 @@ function buildBoard(boardSize){
 			cells.appendChild(pixel);
 		};
 		let container = document.getElementById('container');
-		console.log(container);
 		container.appendChild(cells);
-	};
+	};	
 };
 
 function playerMove(board,pixel){
@@ -133,8 +133,9 @@ function playerMove(board,pixel){
 
 			gameEnd = true;
 			var allActive = document.getElementsByClassName("active");
-			for (cell of allActive){
-				cell.classList.remove("active");
+			for (i of allActive){
+				i.style.cursor = "default"
+				i.style.backgroundColor = "#B0C4DE"
 			};
 
 			for (path of winningPath[0]){
@@ -148,3 +149,4 @@ function playerMove(board,pixel){
 		};
 	};
 };
+
