@@ -3,78 +3,9 @@ let turns = 0;
 let gameEnd = false;
 document.body.onload = buildBoard(boardSize);
 
-
-function checkPals(newBoard, pixel, turn){
-	all_pals = [];
-	coordinates = [[-1,0],[-1,1],[0,1],[1,0],[1,-1],[0,-1]];
-	for (let place of coordinates){
-		var new_pal = pixel.map(function (num, idx) {
-			return num + place[idx];});
-		let y = new_pal[0];
-		let x = new_pal[1];
-		if (0 <= y && y < newBoard.length && 0 <= x && x < newBoard[0].length){
-			if (newBoard[y][x] === turn) {
-				newBoard[y][x] = -1;
-				all_pals.push(new_pal);
-			};
-		};
-	};
-	return all_pals;
-};
-
-
-function checkOne(newBoard, curr, turn){
-	let acc = [];
-	if (turn === 1){
-		if (curr[1] === newBoard.length - 1){
-			return [curr];
-		};
-	} else if (turn === 2){
-		if (curr[0] === newBoard.length - 1){
-			return [curr];
-		};
-	};
-
-	for (let neigh of checkPals(newBoard,curr,turn)){
-		acc = acc.concat(checkOne(newBoard,neigh,turn));
-	};
-	if (acc.length > 0){
-		acc.push(curr);
-	};
-	return acc;
-};
-
-function checkWin(board, turn){
-	let allWins = []
-	for (let i = 0; i < board.length; i++){
-		let newBoard = new Array(board.length);
-		for (let j=0; j<board.length; j++){
-			newBoard[j] = board[j].slice();
-		};
-		if (turn === 1){
-			if (newBoard[i][0] === 1){
-				newBoard[i][0] = -1;
-				path = checkOne(newBoard,[i,0],turn);
-				if (path.length > 0 ){
-					allWins.push(path);
-				};
-			};
-		} else if(turn === 2){
-			if (newBoard[0][i] === 2){
-				newBoard[0][i] = -1;
-				path = checkOne(newBoard,[0,i],turn);
-				if (path.length > 0 ){
-					allWins.push(path);
-				};
-			};			
-		};
-	};
-	return allWins;
-};
-
+// Builds the board
 function buildBoard(boardSize){
 	var board = [];
-
 	for (i=0;i<boardSize;i++) {
 		board.push(new Array(boardSize).fill(0));
 	};
@@ -106,6 +37,62 @@ function buildBoard(boardSize){
 	};	
 };
 
+// Evaluates the board: used in checkOne
+function checkPals(newBoard, pixel, turn){
+	all_pals = [];
+	coordinates = [[-1,0],[-1,1],[0,1],[1,0],[1,-1],[0,-1]];
+	for (let place of coordinates){
+		var new_pal = pixel.map(function (num, idx) {
+			return num + place[idx];});
+		let y = new_pal[0];
+		let x = new_pal[1];
+		let l = newBoard.length
+		if (0 <= y && y < l && 0 <= x && x < l){
+			if (newBoard[y][x] === turn) {
+				newBoard[y][x] = -1;
+				all_pals.push(new_pal);
+			};
+		};
+	};
+	return all_pals;
+};
+
+// Evaluates the board: used in checkWin
+function checkOne(newBoard, curr, turn){
+	let acc = [];
+	if (curr[turn%2] === newBoard.length - 1){
+		return [curr];
+	};
+	for (let neigh of checkPals(newBoard,curr,turn)){
+		acc = acc.concat(checkOne(newBoard,neigh,turn));
+	};
+	if (acc.length > 0){
+		acc.push(curr);
+	};
+	return acc;
+};
+
+// Evaluates the board: used in playerMove
+function checkWin(board, turn){
+	let allWins = []
+	for (let i = 0; i < board.length; i++){
+		let [y,x] = [i*(turn===1), i*(turn===2)]
+		let newBoard = new Array(board.length);
+		for (let j=0; j<board.length; j++){
+			newBoard[j] = board[j].slice();
+		};
+		if (newBoard[y][x] === turn){
+			newBoard[y][x] = -1;
+			path = checkOne(newBoard,[y,x],turn);
+			if (path.length > 0 ){
+				allWins.push(path);
+			};
+		}
+	};
+	return allWins;
+};
+
+// Updates the board
 function playerMove(board,pixel){
 	if (gameEnd === false){
 		let colors = {};
@@ -115,8 +102,8 @@ function playerMove(board,pixel){
 		x = pixel.x
 		if (board[y][x] === 0){
 			turn = turns%2+1
-			board[y][x] = turn; // maybe just p1,
-			var elem = document.getElementById([y,x].join());
+			board[y][x] = turn;
+			let elem = document.getElementById([y,x].join());
 			elem.className = 'pixel p' + turn;
 			turns++;
 			let turnText = document.getElementById("text");
@@ -125,27 +112,26 @@ function playerMove(board,pixel){
 		};
 		let winningPath = checkWin(board,turn);
 		if (winningPath.length > 0){
-			let winner = (turns+1)%2;
-			let myText = document.getElementById("title")
-			myText.innerHTML = colors[winner] + ' wins';
-			let myBorder = document.getElementById("container")
-			myBorder.style.border = "dark" + colors[winner] + " solid 10px";
-
 			gameEnd = true;
-			var allActive = document.getElementsByClassName("active");
+			let winner = (turns+1)%2;
+			let myBorder = document.getElementById("container");
+			let myTitle = document.getElementById("title")
+			let myText = document.getElementById("text")
+			let allActive = document.getElementsByClassName("active");
+			myBorder.style.border = "dark" + colors[winner] + " solid 10px";
+			myTitle.innerHTML = colors[winner] + ' wins';
+			myText.innerHTML = "";
 			for (i of allActive){
+				// i.classList.remove("active");
+				// i.className = "pixel";
+				// i.classList.toggle("active");
 				i.style.cursor = "default"
 				i.style.backgroundColor = "#B0C4DE"
 			};
-
 			for (path of winningPath[0]){
 				myPix = document.getElementById(path[0]+','+path[1]);
 				myPix.classList.add("winPixel");
-				let turnText = document.getElementById("text");
-				turnText.innerHTML = " ";
 			}
-
-
 		};
 	};
 };
